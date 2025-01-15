@@ -1,0 +1,15 @@
+sync_interval_seconds: 15  # Sync interval in seconds (default: 15 seconds)
+
+sources:
+  - source_type: s3
+    credentials:
+      access_key: "AKIA6IESFAOZ5JXTK6UP"
+      secret_key: "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"
+    params:
+      s3_uri: "s3://ashwin-partner-bucket/testunstruct/"
+      region: "eu-west-1"
+
+destination:
+  mongodb_uri: "mongodb+srv://admin:pass123@demo.fmxyq.mongodb.net/"
+  database: "unstructured"  
+  collection: "s3_files"

@@ -1,0 +1,19 @@
+sync_interval_seconds: 15  # Sync interval in seconds (default: 15 seconds)
+
+sources:
+  - source_type: "local"
+    params:
+      input_path: "your-local-directory-path"
+
+  - source_type: s3
+    credentials:
+      access_key: "your-aws-access-key"
+      secret_key: "your-aws-secret-key"
+    params:
+      s3_uri: "your-s3-bucket-uri"
+      region: "your-s3-region"
+
+destination:
+  mongodb_uri: "your-mongodb-uri"
+  database: "your-database"
+  collection: "your-collection"
