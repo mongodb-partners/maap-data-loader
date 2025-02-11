@@ -67,12 +67,12 @@ To install and deploy the MAAP Data Loader application, follow these steps:
 
 3. **Build the Docker image:**
    ```sh
-   make install
+   make build-image
    ```
 
 4. **Running the Docker image:**
    ```sh
-   make run
+   make run-image
    ```
 
 ### Usage
