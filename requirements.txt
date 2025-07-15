@@ -9,7 +9,6 @@ airbyte-api==0.49.4
 airbyte-cdk==3.0.0
 airbyte_protocol_models_pdv2==0.12.2
 altair==5.5.0
-altgraph @ file:///AppleInternal/Library/BuildRoots/39d9dc1a-2111-11f0-be06-226177e5bb69/Library/Caches/com.apple.xbs/Sources/python3/altgraph-0.17.2-py2.py3-none-any.whl
 annotated-types==0.7.0
 antlr4-python3-runtime==4.9.3
 anyio==4.6.2.post1
@@ -54,7 +53,6 @@ flatbuffers==25.1.21
 fonttools==4.55.4
 frozenlist==1.5.0
 fsspec==2024.12.0
-future @ file:///AppleInternal/Library/BuildRoots/39d9dc1a-2111-11f0-be06-226177e5bb69/Library/Caches/com.apple.xbs/Sources/python3/future-0.18.2-py3-none-any.whl
 genson==1.2.2
 gitdb==4.0.11
 GitPython==3.1.43
@@ -108,7 +106,6 @@ langsmith==0.1.147
 layoutparser==0.3.4
 llama_stack_client==0.1.5
 lxml==5.3.0
-macholib @ file:///AppleInternal/Library/BuildRoots/39d9dc1a-2111-11f0-be06-226177e5bb69/Library/Caches/com.apple.xbs/Sources/python3/macholib-1.15.2-py2.py3-none-any.whl
 Markdown==3.7
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
