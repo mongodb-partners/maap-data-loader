@@ -179,6 +179,81 @@ docker run -d --env-file .env maap-data-loader
 +------------------------+
 ```
 
+## Detailed Architecture
+```mermaid
+graph TB
+    subgraph Input ["Data Input Layer"]
+        DS["Data Sources"] --> FU["File Upload"]
+    end
+
+    subgraph Processing ["Processing Layer"]
+        direction TB
+        subgraph ES["Enterprise Services"]
+            PE["Pipeline Executor"] --> MI["MongoDB Ingest"]
+            PE --> BC["Base Configs"]
+            BC --> DL["Downloader"]
+            BC --> IX["Indexer"]
+            BC --> SC["Source Config"]
+        end
+
+        subgraph LS["Local Services"]
+            DS1["Document Service"] --> BS["Bedrock Service"]
+            DS1 --> ES1["Embedding Service"]
+        end
+    end
+
+    subgraph Storage ["Storage Layer"]
+        MD["MongoDB"] --> UF["Uploaded Files"]
+        MD --> LOG["Logs"]
+    end
+
+    subgraph Utils ["Utility Layer"]
+        EU["Error Utils"] --> LG["Logger"]
+        FUT["File Utils"] --> LG
+    end
+
+    Input --> Processing
+    Processing --> Storage
+    Utils --> Processing
+    Utils --> Storage
+
+    classDef primary fill:#2374AB,stroke:#2374AB,color:white
+    classDef secondary fill:#68A2CA,stroke:#68A2CA,color:white
+    classDef tertiary fill:#95B8D3,stroke:#95B8D3,color:white
+    classDef quaternary fill:#B8D0E1,stroke:#B8D0E1,color:black
+
+    class DS,FU primary
+    class PE,MI,DS1,BS,ES1 secondary
+    class MD,UF,LOG tertiary
+    class EU,FUT,LG quaternary
+```
+
+### Component Description
+
+#### Input Layer
+- **Data Sources**: Various input sources including files, APIs, and streams
+- **File Upload**: Handles file ingestion and initial validation
+
+#### Processing Layer
+- **Enterprise Services**
+  - Pipeline Executor: Orchestrates data processing workflows
+  - MongoDB Ingest: Handles data ingestion into MongoDB
+  - Configuration Components: Manages processing settings
+- **Local Services**
+  - Document Service: Processes and transforms documents
+  - Bedrock Service: AWS Bedrock integration for AI capabilities
+  - Embedding Service: Generates embeddings for documents
+
+#### Storage Layer
+- **MongoDB**: Primary data store
+- **Uploaded Files**: Temporary storage for processed files
+- **Logs**: Application logging and monitoring
+
+#### Utility Layer
+- **Error Utils**: Error handling and reporting
+- **File Utils**: File system operations
+- **Logger**: Logging and monitoring utilities
+
 ## Best Practices
 - Always use virtual environments
 - Keep sensitive information in environment variables
@@ -201,8 +276,3 @@ Common issues and solutions:
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-### About MAAP Program
-The MongoDB Atlas Application Partner (MAAP) program empowers developers and organizations by providing advanced tools and resources for building scalable applications on MongoDB Atlas. Learn more about the MAAP program [here](https://www.mongodb.com/partners/atlas).
