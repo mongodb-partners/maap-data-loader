@@ -1,4 +1,4 @@
-# MAAP Data Loader
+# Data Loader
 
 ## Introduction
 The `maap-data-loader` project is designed to streamline data ingestion and processing for the MongoDB Atlas Application Partner (MAAP) program. This tool provides a robust mechanism to load, transform, and manage data efficiently, ensuring seamless integration with MongoDB Atlas. It supports both structured and unstructured data processing, with built-in support for document processing, embeddings generation, and integration with various AI services.
@@ -113,35 +113,196 @@ maap-data-loader/
 
 ## Usage Examples
 
-### Basic Document Processing
-```python
-from local.services.document_service import DocumentService
-from local.services.embedding_service import EmbeddingService
+# MAAP Data Loader - cURL Examples
 
-# Initialize services
-doc_service = DocumentService()
-embedding_service = EmbeddingService()
+These examples demonstrate how to interact with the MAAP Data Loader API using cURL commands.
 
-# Process a document
-processed_doc = doc_service.process("path/to/document")
-embeddings = embedding_service.generate(processed_doc)
+## Health Check
+Check if the API service is running:
+
+```bash
+curl -X GET http://localhost:8000/health
 ```
 
-### Enterprise Pipeline Execution
-```python
-from enterprise.pipeline_executor import PipelineExecutor
-from enterprise.util.builder import PipelineBuilder
+Expected response:
+```json
+{"status": "healthy"}
+```
 
-# Configure pipeline
-pipeline = PipelineBuilder()\
-    .add_source("file_system")\
-    .add_processor("document")\
-    .add_sink("mongodb")\
-    .build()
+## Upload Files (PDF, DOCX, etc.)
+Upload files for processing and embedding generation:
 
-# Execute pipeline
-executor = PipelineExecutor(pipeline)
-executor.run()
+```bash
+curl -X POST http://localhost:8000/local/upload \
+  -H "Content-Type: multipart/form-data" \
+  -F "files=@/path/to/your/document.pdf" \
+  -F 'json_input_params={
+    "user_id": "user123",
+    "mongodb_config": {
+      "uri": "mongodb+srv://username:password@cluster.mongodb.net",
+      "database": "maap_db",
+      "collection": "documents",
+      "index_name": "vector_index",
+      "text_field": "text",
+      "embedding_field": "embedding"
+    }
+  }'
+```
+
+## Process Web Pages
+Process web content without file upload:
+
+```bash
+curl -X POST http://localhost:8000/local/upload \
+  -H "Content-Type: multipart/form-data" \
+  -F 'json_input_params={
+    "user_id": "user123",
+    "mongodb_config": {
+      "uri": "mongodb+srv://username:password@cluster.mongodb.net",
+      "database": "maap_db",
+      "collection": "documents",
+      "index_name": "vector_index",
+      "text_field": "text",
+      "embedding_field": "embedding"
+    },
+    "web_pages": ["https://www.mongodb.com/docs", "https://www.mongodb.com/atlas"]
+  }'
+```
+
+## Handling Responses
+
+Successful response example:
+```json
+{
+  "success": true,
+  "message": "Successfully processed 3 documents",
+  "details": {
+    "processed_files": ["document1.pdf", "document2.docx", "document3.txt"],
+    "documents_count": 3
+  }
+}
+```
+
+Error response example:
+```json
+{
+  "success": false,
+  "error": "Invalid MongoDB URI",
+  "traceback": null
+}
+```
+
+## Enterprise API Examples
+
+### Register a New Source
+
+#### Local File System
+Register a local file system as a data source:
+
+```bash
+curl --location --request GET 'localhost:8182/register/source' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "sync_interval_seconds": 360,
+  "source": {
+    "source_type": "local",
+    "params": {
+      "remote_url": "<source-url-folder-path>",
+      "chunking_strategy": "by_title",
+      "chunk_max_characters": "1500",
+      "chunk_overlap": "100"
+    }
+  },
+  "destination": {
+    "mongodb_uri": "<your-mongodb-connection-string>",
+    "database": "<your-db-name>",
+    "collection": "<your-collection-name>",
+    "index_name": "default",
+    "embedding_path": "embeddings",
+    "embedding_dimensions": 1536,
+    "id_fields": ["field1", "field2"],
+    "create_md5": true,
+    "batch_size": 100
+  }
+}'
+```
+
+#### AWS S3 Bucket
+Register an AWS S3 bucket as a data source:
+
+```bash
+curl --location --request GET 'localhost:8182/register/source' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "sync_interval_seconds": 360,
+  "source": {
+    "source_type": "s3",
+    "credentials": {
+      "aws_access_key_id": "<your-aws-access-key-id>",
+      "aws_secret_access_key": "<your-aws-secret-key>",
+      "aws_session_token": "<your-aws-session-token>"
+    },
+    "params": {
+      "remote_url": "<source-url-folder-path>",
+      "chunking_strategy": "by_title",
+      "chunk_max_characters": "1500",
+      "chunk_overlap": "100"
+    }
+  },
+  "destination": {
+    "mongodb_uri": "<your-mongodb-connection-string>",
+    "database": "<your-db-name>",
+    "collection": "<your-collection-name>",
+    "index_name": "default",
+    "embedding_path": "embeddings",
+    "embedding_dimensions": 1536,
+    "id_fields": ["field1", "field2"],
+    "create_md5": true,
+    "batch_size": 100
+  }
+}'
+```
+
+#### Google Drive
+Register a Google Drive folder as a data source:
+
+```bash
+curl --location --request GET 'localhost:8182/register/source' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "sync_interval_seconds": 360,
+  "source": {
+    "source_type": "google-drive",
+    "credentials": {
+      "gcp_service_account_key_string": "<gcp_service_account_key_string>",
+      "google_drive_folder_id": "<google_drive_folder_id>"
+    },
+    "params": {
+      "remote_url": "<source-url-folder-path>",
+      "chunking_strategy": "by_title",
+      "chunk_max_characters": "1500",
+      "chunk_overlap": "100"
+    }
+  },
+  "destination": {
+    "mongodb_uri": "<your-mongodb-connection-string>",
+    "database": "<your-db-name>",
+    "collection": "<your-collection-name>",
+    "index_name": "default",
+    "embedding_path": "embeddings",
+    "embedding_dimensions": 1536,
+    "id_fields": ["field1", "field2"],
+    "create_md5": true,
+    "batch_size": 100
+  }
+}'
+```
+
+Expected response for all source registrations:
+```json
+{
+  "message": "Source registered successfully"
+}
 ```
 
 ## Monitoring and Logging
