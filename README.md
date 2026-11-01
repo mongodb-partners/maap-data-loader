@@ -28,6 +28,9 @@ This system is ideal for organizations needing to centralize and structure data 
 
 ### System Architecture
 
+![Architecture](docs/images/architecture.svg)
+
+
 The MAAP Data Loader application follows a modular architecture, consisting of several key components:
 
 1. **FastAPI Application**: Provides RESTful API endpoints for controlling the sync process.

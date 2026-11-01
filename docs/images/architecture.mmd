@@ -1,0 +1,20 @@
+---
+title: MAAP Data Loader
+---
+flowchart LR
+subgraph sources[Data sources]
+Local[Local files]
+S3["Amazon S3"]
+GDrive[Google Drive]
+end
+Client([MAAP framework]) -->|register or delete source| API["FastAPI service<br/>port 8182"]
+subgraph pipe[Data pipeline]
+API --> Sched["Background sync<br/>configurable interval"]
+Sched --> Unstructured["Unstructured<br/>partition and chunk"]
+Unstructured --> Embed[Embedder]
+end
+Local --> Sched
+S3 --> Sched
+GDrive --> Sched
+Embed --> Upload["MongoDB uploader<br/>ID fields and MD5 dedup"]
+Upload --> Atlas[("MongoDB Atlas<br/>collection and vector index")]
